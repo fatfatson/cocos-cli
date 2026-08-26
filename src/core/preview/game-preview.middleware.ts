@@ -196,11 +196,40 @@ export default {
                         settingsJs: `/preview/settings.js${sceneQuery}`,
                         sceneQuery,
                     };
-                    const templatePath = join(GlobalPaths.workspace, 'static', 'web', 'game.ejs');
+                    const builtinTemplate = join(GlobalPaths.workspace, 'static', 'web', 'game.ejs');
+                    const projectTemplate = scripting.projectPath
+                        ? join(scripting.projectPath, 'preview', 'game.ejs')
+                        : '';
+                    const templatePath = projectTemplate && existsSync(projectTemplate)
+                        ? projectTemplate
+                        : builtinTemplate;
                     const html = await ejs.renderFile(templatePath, renderData);
                     // 预览入口页不缓存，避免浏览器复用旧的 boot/settings 引用
                     res.set('Cache-Control', 'no-store');
                     res.status(200).send(html);
+                } catch (err) {
+                    next(err);
+                }
+            },
+        },
+        {
+            // 项目自带的预览页静态文件（preview/chrome.js 等），不进 CLI static/web
+            url: /^\/project-preview\//,
+            async handler(req: Request, res: Response, next: NextFunction) {
+                try {
+                    const { default: scripting } = await import('../../core/scripting');
+                    if (!scripting.projectPath) {
+                        return next();
+                    }
+                    const rel = req.path.substring('/project-preview/'.length);
+                    if (!rel || rel.includes('..')) {
+                        return next();
+                    }
+                    const file = join(scripting.projectPath, 'preview', rel);
+                    if (!existsSync(file)) {
+                        return next();
+                    }
+                    res.sendFile(file);
                 } catch (err) {
                     next(err);
                 }

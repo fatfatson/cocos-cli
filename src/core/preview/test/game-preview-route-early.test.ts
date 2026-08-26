@@ -77,5 +77,6 @@ describe('game preview `/` route works before builder init (early-registration i
         // GamePreview 必须显式提供 `/`，registerBrowserPreview 早注册时它才能先于场景宽泛路由命中。
         const urls = (GamePreviewMiddleware.get || []).map((m: any) => String(m.url));
         expect(urls).toContain('/');
+        expect(urls.some((u) => String(u).includes('project-preview'))).toBe(true);
     });
 });
