@@ -53,3 +53,4 @@ profiles/cocos.config.json
 
 # performance profiling artifacts
 perf/
+packages/engine

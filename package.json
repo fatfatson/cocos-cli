@@ -193,5 +193,11 @@
         "zod-to-json-schema": "^3.24.6",
         "zod-to-ts": "1.1.4",
         "xml2js": "^0.6.0"
+    },
+    "allowScripts": {
+        "sharp@0.32.6": true,
+        "gl@9.0.0-rc.10": true,
+        "esbuild@0.25.11": true,
+        "@ffprobe-installer/darwin-arm64@5.0.1": true
     }
 }
